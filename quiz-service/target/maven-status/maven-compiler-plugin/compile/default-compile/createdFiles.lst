@@ -1,5 +1,6 @@
 com/quiz/quiz/model/Question.class
 com/quiz/quiz/model/Quiz.class
+com/quiz/quiz/repository/QuizRepository.class
 com/quiz/quiz/client/QuestionClient.class
 com/quiz/quiz/service/QuizService.class
 com/quiz/quiz/controller/QuizController.class

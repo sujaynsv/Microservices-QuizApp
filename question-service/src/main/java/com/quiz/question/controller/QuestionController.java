@@ -18,13 +18,28 @@ public class QuestionController {
         return questionService.getQuestionsByQuizId(quizId);
     }
 
+    @GetMapping("/{questionId}")
+    public Question getQuestionById(@PathVariable Integer questionId) {
+        return questionService.getQuestionById(questionId);
+    }
+
+    @GetMapping
+    public List<Question> getAllQuestions() {
+        return questionService.getAllQuestions();
+    }
+
     @PostMapping
     public Question addQuestion(@RequestBody Question question) {
         return questionService.addQuestion(question);
     }
 
-    @GetMapping("/{questionId}")
-    public Question getQuestionById(@PathVariable Integer questionId) {
-        return questionService.getQuestionById(questionId);
+    @PutMapping("/{questionId}")
+    public Question updateQuestion(@PathVariable Integer questionId, @RequestBody Question question) {
+        return questionService.updateQuestion(questionId, question);
+    }
+
+    @DeleteMapping("/{questionId}")
+    public void deleteQuestion(@PathVariable Integer questionId) {
+        questionService.deleteQuestion(questionId);
     }
 }

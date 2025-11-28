@@ -1,36 +1,45 @@
 package com.quiz.question.service;
 
 import com.quiz.question.model.Question;
+import com.quiz.question.repository.QuestionRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class QuestionService {
 
-    private Map<Integer, Question> questionDB = new HashMap<>();
-    private Integer questionIdCounter = 1;
-
-    public QuestionService() {
-        // Sample questions
-        questionDB.put(1, new Question(1, "What is Java?", "Language", "Platform", "Both", "None", "Both", 1));
-        questionDB.put(2, new Question(2, "What is Spring?", "Framework", "Library", "Tool", "None", "Framework", 1));
-        questionDB.put(3, new Question(3, "What is SQL?", "Language", "Tool", "Both", "None", "Language", 2));
-    }
+    @Autowired
+    private QuestionRepository questionRepository;
 
     public List<Question> getQuestionsByQuizId(Integer quizId) {
-        return questionDB.values().stream()
-                .filter(q -> q.getQuizId().equals(quizId))
-                .collect(Collectors.toList());
+        return questionRepository.findByQuizId(quizId);
     }
 
     public Question addQuestion(Question question) {
-        question.setId(++questionIdCounter);
-        questionDB.put(question.getId(), question);
-        return question;
+        return questionRepository.save(question);
     }
 
     public Question getQuestionById(Integer questionId) {
-        return questionDB.get(questionId);
+        Optional<Question> question = questionRepository.findById(questionId);
+        return question.orElse(null);
+    }
+
+    public List<Question> getAllQuestions() {
+        return questionRepository.findAll();
+    }
+
+    public Question updateQuestion(Integer id, Question question) {
+        Optional<Question> existing = questionRepository.findById(id);
+        if (existing.isPresent()) {
+            question.setId(id);
+            return questionRepository.save(question);
+        }
+        return null;
+    }
+
+    public void deleteQuestion(Integer id) {
+        questionRepository.deleteById(id);
     }
 }

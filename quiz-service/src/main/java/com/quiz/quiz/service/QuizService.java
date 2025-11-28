@@ -2,40 +2,55 @@ package com.quiz.quiz.service;
 
 import com.quiz.quiz.client.QuestionClient;
 import com.quiz.quiz.model.Quiz;
+import com.quiz.quiz.repository.QuizRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class QuizService {
 
     @Autowired
+    private QuizRepository quizRepository;
+
+    @Autowired
     private QuestionClient questionClient;
 
-    private Map<Integer, Quiz> quizDB = new HashMap<>();
-
-    public QuizService() {
-        quizDB.put(1, new Quiz(1, "Java Quiz", "Test your Java knowledge", null));
-        quizDB.put(2, new Quiz(2, "SQL Quiz", "Test your SQL knowledge", null));
-    }
-
     public Quiz getQuizWithQuestions(Integer quizId) {
-        Quiz quiz = quizDB.get(quizId);
-        if (quiz != null) {
-            // Call Question Service via Feign to get questions
-            quiz.setQuestions(questionClient.getQuestionsByQuizId(quizId));
+        Optional<Quiz> quiz = quizRepository.findById(quizId);
+        if (quiz.isPresent()) {
+            Quiz quizData = quiz.get();
+            // Feign usage
+            quizData.setQuestions(questionClient.getQuestionsByQuizId(quizId));
+            return quizData;
         }
-        return quiz;
+        return null;
     }
 
     public Quiz getQuiz(Integer quizId) {
-        return quizDB.get(quizId);
+        Optional<Quiz> quiz = quizRepository.findById(quizId);
+        return quiz.orElse(null);
     }
 
     public Quiz addQuiz(Quiz quiz) {
-        Integer newId = quizDB.size() + 1;
-        quiz.setId(newId);
-        quizDB.put(newId, quiz);
-        return quiz;
+        return quizRepository.save(quiz);
+    }
+
+    public List<Quiz> getAllQuizzes() {
+        return quizRepository.findAll();
+    }
+
+    public Quiz updateQuiz(Integer id, Quiz quiz) {
+        Optional<Quiz> existing = quizRepository.findById(id);
+        if (existing.isPresent()) {
+            quiz.setId(id);
+            return quizRepository.save(quiz);
+        }
+        return null;
+    }
+
+    public void deleteQuiz(Integer id) {
+        quizRepository.deleteById(id);
     }
 }

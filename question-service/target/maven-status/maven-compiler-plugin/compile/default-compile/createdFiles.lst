@@ -2,3 +2,4 @@ com/quiz/question/QuestionApplication.class
 com/quiz/question/controller/QuestionController.class
 com/quiz/question/service/QuestionService.class
 com/quiz/question/model/Question.class
+com/quiz/question/repository/QuestionRepository.class

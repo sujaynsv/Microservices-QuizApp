@@ -4,6 +4,7 @@ import com.quiz.quiz.model.Quiz;
 import com.quiz.quiz.service.QuizService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/quizzes")
@@ -22,8 +23,23 @@ public class QuizController {
         return quizService.getQuizWithQuestions(quizId);
     }
 
+    @GetMapping
+    public List<Quiz> getAllQuizzes() {
+        return quizService.getAllQuizzes();
+    }
+
     @PostMapping
     public Quiz addQuiz(@RequestBody Quiz quiz) {
         return quizService.addQuiz(quiz);
+    }
+
+    @PutMapping("/{quizId}")
+    public Quiz updateQuiz(@PathVariable Integer quizId, @RequestBody Quiz quiz) {
+        return quizService.updateQuiz(quizId, quiz);
+    }
+
+    @DeleteMapping("/{quizId}")
+    public void deleteQuiz(@PathVariable Integer quizId) {
+        quizService.deleteQuiz(quizId);
     }
 }
