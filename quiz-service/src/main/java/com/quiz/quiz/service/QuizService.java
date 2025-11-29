@@ -3,8 +3,13 @@ package com.quiz.quiz.service;
 import com.quiz.quiz.client.QuestionClient;
 import com.quiz.quiz.model.Quiz;
 import com.quiz.quiz.repository.QuizRepository;
+
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,6 +22,12 @@ public class QuizService {
     @Autowired
     private QuestionClient questionClient;
 
+    
+    
+    @CircuitBreaker(
+    		name="questionServiceCB",
+    		fallbackMethod="getQuestionsWithFallback"
+    )
     public Quiz getQuizWithQuestions(Integer quizId) {
         Optional<Quiz> quiz = quizRepository.findById(quizId);
         if (quiz.isPresent()) {
@@ -52,5 +63,17 @@ public class QuizService {
 
     public void deleteQuiz(Integer id) {
         quizRepository.deleteById(id);
+    }
+    
+    
+    public Quiz getQuestionsWithFallback(Integer quizId, Exception ex) {
+    	System.out.println("Circuit Brekaer Trigerred! Question Service not available");
+    	
+    	Quiz quiz=quizRepository.findById(quizId).orElse(null);
+    	
+    	if(quiz!=null) {
+    		quiz.setQuestions(new ArrayList<>());
+    	}
+    	return quiz;
     }
 }
